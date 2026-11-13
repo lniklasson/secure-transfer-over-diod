@@ -1,4 +1,4 @@
-# secure-transfer
+# secure-transfer-over-diod
 
 Unidirectional log transfer over a data diode (UDP), with a Sender and a Receiver in one script.
 
