@@ -26,6 +26,12 @@ python3 secure_transfer.py --receiver             # on the receiving side
 python3 secure_transfer.py --sender --send-test   # send a test message
 ```
 
+An example configuration with every option documented is in [`transfer.ini.example`](transfer.ini.example). Copy it to `transfer.ini` and adjust it (`transfer.ini` is git-ignored, so environment-specific settings stay local):
+
+```bash
+cp transfer.ini.example transfer.ini
+```
+
 Config precedence: command line > `transfer.ini` > built-in default.
 Run `python3 secure_transfer.py --help` for all options and a hardened systemd unit example.
 

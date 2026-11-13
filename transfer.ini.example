@@ -1,0 +1,88 @@
+# secure_transfer.py configuration (v21)
+# Precedence: command line > this file > built-in default.
+# Inline comments are allowed:  key = value   # comment
+
+[SENDER]
+# --- INPUT: DIRECTORY SCAN ---
+# Enable (true) or disable (false) scanning the input directory for log files
+input_dir_enabled = true
+# Directory where log files to be sent are placed (not recursive)
+input_dir = ./sender_input
+# State file with per-file offsets (prevents re-sending after restart)
+state_file = ./sender_state.json
+# Comma-separated glob patterns for files to ignore (swap/temp/compressed)
+ignore_patterns = .*, *.swp, *.swo, *.swx, *~, *.tmp, *.part, *.json, *.gz, *.bz2, *.xz, *.zip
+# Seconds between directory scans
+scan_interval = 5
+# A trailing line without newline is sent once the file has been unchanged
+# for this many seconds
+partial_line_timeout = 60
+
+# --- INPUT: TCP SYSLOG LISTENER ---
+# Enable (true) or disable (false) the TCP syslog listener
+tcp_listener_enabled = true
+# Address to bind the TCP listener to (0.0.0.0 = all interfaces)
+listen_address = 0.0.0.0
+# TCP port for incoming syslog (LF framing or RFC 6587 octet counting)
+listening_port = 50666
+
+# --- OUTPUT: DATA DIODE STREAMS ---
+# Enable (true) or disable (false) the primary data diode stream
+primary_enabled = true
+primary_ip = 192.168.1.100
+primary_port = 50666
+
+# Enable (true) or disable (false) the secondary (redundant) diode stream
+secondary_enabled = true
+secondary_ip = 192.168.1.98
+secondary_port = 50666
+
+# Max UDP datagram size in bytes (512-65507). Larger messages are fragmented
+# and reassembled by the Receiver. Use ~1400 if the diode cannot pass
+# IP fragments.
+max_datagram_size = 65000
+# Max datagrams per second per stream (0 = unlimited). Protects the diode
+# and the Receiver socket buffer from bursts when large files are dropped in.
+max_packets_per_second = 0
+
+# --- INTERNAL LOGGING ---
+log_file = sender.log
+# INFO or DEBUG
+log_level = INFO
+# Number of rotated log files to keep (100 MB each)
+log_backup_count = 5
+# Seconds between statistics log lines (0 = disabled)
+stats_interval = 60
+
+
+[RECEIVER]
+# --- INPUT: DATA DIODE ---
+# Address to bind the UDP listener to (0.0.0.0 = all interfaces)
+listen_address = 0.0.0.0
+# UDP port for incoming data diode streams
+listening_port = 50666
+# Requested socket receive buffer in bytes. Linux caps this at
+# net.core.rmem_max - raise it with sysctl if needed.
+recv_buffer_bytes = 8388608
+# Number of message IDs remembered for duplicate detection
+dedup_capacity = 200000
+
+# --- OUTPUT: SIEM FORWARDING (UDP syslog) ---
+# Enable (true) or disable (false) forwarding deduplicated logs to the SIEM
+siem_forward_enabled = true
+siem_ip = 192.168.1.98
+siem_port = 50666
+
+# --- OUTPUT: LOCAL FILE STORAGE ---
+# Enable (true) or disable (false) writing received logs to mirrored files
+output_dir_enabled = true
+output_dir = ./receiver_output
+
+# --- INTERNAL LOGGING ---
+log_file = receiver.log
+# INFO or DEBUG
+log_level = INFO
+# Number of rotated log files to keep (100 MB each)
+log_backup_count = 5
+# Seconds between statistics log lines (0 = disabled)
+stats_interval = 60
